@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.item.mapper.ServiceIngredientsMapper">
+    
+    <resultMap type="ServiceIngredients" id="ServiceIngredientsResult">
+        <result property="smId"    column="sm_id"    />
+        <result property="smNo"    column="sm_no"    />
+        <result property="smName"    column="sm_name"    />
+        <result property="smUnit"    column="sm_unit"    />
+        <result property="smNum"    column="sm_num"    />
+        <result property="stId"    column="st_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+
+    </resultMap>
+	
+	<sql id="selectServiceIngredientsVo">
+        select sm_id, sm_no, sm_name, sm_unit, sm_num, st_id, create_time, remark, dept_id   from service_ingredients
+    </sql>
+	
+    <select id="selectServiceIngredientsList" parameterType="ServiceIngredients" resultMap="ServiceIngredientsResult">
+        <include refid="selectServiceIngredientsVo"/>
+        <where>  
+            <if test="smId != null "> and sm_id = #{smId}</if>
+             <if test="smNo != null  and smNo != '' "> and sm_no = #{smNo}</if>
+             <if test="smName != null  and smName != '' ">
+                 and sm_name like concat('%', #{smName}, '%')
+             </if>
+             <if test="smUnit != null  and smUnit != '' "> and sm_unit = #{smUnit}</if>
+             <if test="smNum != null "> and sm_num = #{smNum}</if>
+             <if test="stId != null "> and st_id = #{stId}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+             <if test="deptId != null  and deptId != '' "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectServiceIngredientsById" parameterType="Long" resultMap="ServiceIngredientsResult">
+        <include refid="selectServiceIngredientsVo"/>
+        where sm_id = #{smId}
+    </select>
+        
+    <insert id="insertServiceIngredients" parameterType="ServiceIngredients" useGeneratedKeys="true" keyProperty="smId">
+        insert into service_ingredients
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="smNo != null  and smNo != ''  ">sm_no,</if>
+			<if test="smName != null  and smName != ''  ">sm_name,</if>
+			<if test="smUnit != null  and smUnit != ''  ">sm_unit,</if>
+			<if test="smNum != null  ">sm_num,</if>
+			<if test="stId != null  ">st_id,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="smNo != null  and smNo != ''  ">#{smNo},</if>
+			<if test="smName != null  and smName != ''  ">#{smName},</if>
+			<if test="smUnit != null  and smUnit != ''  ">#{smUnit},</if>
+			<if test="smNum != null  ">#{smNum},</if>
+			<if test="stId != null  ">#{stId},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="deptId != null  "> #{deptId},</if>
+
+        </trim>
+    </insert>
+	 
+    <update id="updateServiceIngredients" parameterType="ServiceIngredients">
+        update service_ingredients
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="smNo != null  and smNo != ''  ">sm_no = #{smNo},</if>
+            <if test="smName != null  and smName != ''  ">sm_name = #{smName},</if>
+            <if test="smUnit != null  and smUnit != ''  ">sm_unit = #{smUnit},</if>
+            <if test="smNum != null  ">sm_num = #{smNum},</if>
+            <if test="stId != null  ">st_id = #{stId},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="deptId != null  and deptId != '' ">dept_id = #{deptId},</if>
+
+        </trim>
+        where sm_id = #{smId}
+    </update>
+
+	<delete id="deleteServiceIngredientsById" parameterType="Long">
+        delete from service_ingredients where sm_id = #{smId}
+    </delete>
+	
+    <delete id="deleteServiceIngredientsByIds" parameterType="String">
+        delete from service_ingredients where sm_id in 
+        <foreach item="smId" collection="array" open="(" separator="," close=")">
+            #{smId}
+        </foreach>
+    </delete>
+    <!-- 根据部门查询 配料信息 -->
+    <select id="selectDeptServiceIngredientsList" resultMap="ServiceIngredientsResult">
+        <include refid="selectServiceIngredientsVo"/>
+         <where>
+             <if test="deptId !=null and deptId !=''">
+               and  dept_id = #{deptId}
+             </if>
+             <if test="smName != null  and smName != ''  ">
+                and  sm_name like concat('%', #{smName}, '%')
+             </if>
+             <if test="smUnit != null  and smUnit != ''  ">
+                 and  sm_unit =#{smUnit}
+             </if>
+             <if test="stId != null  ">
+                 and  st_id =#{stId}
+             </if>
+         </where>
+    </select>
+
+    <!-- 查询服务项所需的配料 -->
+    <select id="selectServiceIngredients" resultMap="ServiceIngredientsResult"  >
+        <include refid="selectServiceIngredientsVo"/>
+        where st_id = #{id}
+    </select>
+    <!--  通过服务项目id查询所用的配料-->
+    <select id="selectServiceIngredientsBySiId" resultMap="ServiceIngredientsResult" >
+        <include refid="selectServiceIngredientsVo"/>
+        where
+        service_ingredients.st_id = #{siId}
+
+    </select>
+</mapper>

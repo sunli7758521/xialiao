@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.record.mapper.StSiRecordMapper">
+    
+    <resultMap type="StSiRecord" id="StSiRecordResult">
+        <result property="rsiId"    column="rsi_id"    />
+        <result property="stId"    column="st_id"    />
+        <result property="siId"    column="si_id"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+	<sql id="selectStSiRecordVo">
+        select rsi_id, st_id, si_id, create_time from st_si_record
+    </sql>
+	
+    <select id="selectStSiRecordList" parameterType="StSiRecord" resultType="com.ruoyi.record.domain.StSiRecord">
+        <!--<include refid="selectStSiRecordVo"/>-->
+        SELECT
+        a.rsi_id as rsiId,
+        count(a.si_id) AS siIdNum,
+        sum(u.sm_num) as num,
+        u.sm_name as  peiName,
+        st.si_name as itemName
+        FROM
+        st_si_record a
+        JOIN service_ingredients u ON a.si_id = u.sm_id
+        JOIN service_items st ON a.st_id = st.si_id
+        <where>
+        <if test="itemName !=null and itemName !=''">
+        and st.si_name like concat('%', #{itemName}, '%')
+        </if>
+            <if test="rsiId != null "> and rsi_id = #{rsiId}</if>
+            <if test="stId != null "> and st_id = #{stId}</if>
+            <if test="siId != null "> and si_id = #{siId}</if>
+        </where>
+        GROUP BY
+        a.st_id,
+        a.si_id
+    </select>
+    
+    <select id="selectStSiRecordById" parameterType="Long" resultMap="StSiRecordResult">
+        <include refid="selectStSiRecordVo"/>
+        where rsi_id = #{rsiId}
+    </select>
+        
+    <insert id="insertStSiRecord" parameterType="StSiRecord" useGeneratedKeys="true" keyProperty="rsiId">
+        insert into st_si_record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="stId != null  ">st_id,</if>
+			<if test="siId != null  ">si_id,</if>
+			<if test="createTime != null  ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="stId != null  ">#{stId},</if>
+			<if test="siId != null  ">#{siId},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateStSiRecord" parameterType="StSiRecord">
+        update st_si_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="stId != null  ">st_id = #{stId},</if>
+            <if test="siId != null  ">si_id = #{siId},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+        </trim>
+        where rsi_id = #{rsiId}
+    </update>
+
+	<delete id="deleteStSiRecordById" parameterType="Long">
+        delete from st_si_record where rsi_id = #{rsiId}
+    </delete>
+	
+    <delete id="deleteStSiRecordByIds" parameterType="String">
+        delete from st_si_record where rsi_id in 
+        <foreach item="rsiId" collection="array" open="(" separator="," close=")">
+            #{rsiId}
+        </foreach>
+    </delete>
+    
+</mapper>

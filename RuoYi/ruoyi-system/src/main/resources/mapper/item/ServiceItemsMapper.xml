@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.item.mapper.ServiceItemsMapper">
+    
+    <resultMap type="ServiceItems" id="ServiceItemsResult">
+        <result property="siId"    column="si_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="ancestors"    column="ancestors"    />
+        <result property="siName"    column="si_name"    />
+        <result property="orderNum"    column="order_num"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+	
+	<sql id="selectServiceItemsVo">
+        select si_id, dept_id, ancestors, si_name, order_num, status, create_time, update_time from service_items
+    </sql>
+	
+    <select id="selectServiceItemsList" parameterType="ServiceItems" resultMap="ServiceItemsResult">
+        <include refid="selectServiceItemsVo"/>
+        <where>  
+            <if test="siId != null "> and si_id = #{siId}</if>
+             <if test="deptId != null "> and dept_id = #{deptId}</if>
+             <if test="ancestors != null  and ancestors != '' "> and ancestors = #{ancestors}</if>
+             <if test="siName != null  and siName != '' ">
+                 and si_name like concat('%', #{siName}, '%')
+             </if>
+             <if test="orderNum != null "> and order_num = #{orderNum}</if>
+             <if test="status != null  and status != '' "> and status = #{status}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="updateTime != null "> and update_time = #{updateTime}</if>
+         </where>
+    </select>
+    
+    <select id="selectServiceItemsById" parameterType="Long" resultMap="ServiceItemsResult">
+        <include refid="selectServiceItemsVo"/>
+        where si_id = #{siId}
+    </select>
+        
+    <insert id="insertServiceItems" parameterType="ServiceItems" useGeneratedKeys="true" keyProperty="siId">
+        insert into service_items
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="deptId != null  ">dept_id,</if>
+			<if test="ancestors != null  and ancestors != ''  ">ancestors,</if>
+			<if test="siName != null  and siName != ''  ">si_name,</if>
+			<if test="orderNum != null  ">order_num,</if>
+			<if test="status != null  and status != ''  ">status,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="updateTime != null  ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="deptId != null  ">#{deptId},</if>
+			<if test="ancestors != null  and ancestors != ''  ">#{ancestors},</if>
+			<if test="siName != null  and siName != ''  ">#{siName},</if>
+			<if test="orderNum != null  ">#{orderNum},</if>
+			<if test="status != null  and status != ''  ">#{status},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="updateTime != null  ">#{updateTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateServiceItems" parameterType="ServiceItems">
+        update service_items
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null  ">dept_id = #{deptId},</if>
+            <if test="ancestors != null  and ancestors != ''  ">ancestors = #{ancestors},</if>
+            <if test="siName != null  and siName != ''  ">si_name = #{siName},</if>
+            <if test="orderNum != null  ">order_num = #{orderNum},</if>
+            <if test="status != null  and status != ''  ">status = #{status},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="updateTime != null  ">update_time = #{updateTime},</if>
+        </trim>
+        where si_id = #{siId}
+    </update>
+
+	<delete id="deleteServiceItemsById" parameterType="Long">
+        delete from service_items where si_id = #{siId}
+    </delete>
+	
+    <delete id="deleteServiceItemsByIds" parameterType="String">
+        delete from service_items where si_id in 
+        <foreach item="siId" collection="array" open="(" separator="," close=")">
+            #{siId}
+        </foreach>
+    </delete>
+    <!-- 根据部门查询自己部门的服务 -->
+    <select id="selectByDeptIdService" resultMap="ServiceItemsResult" >
+        <include refid="selectServiceItemsVo"/>
+        <where>
+            <if test="deptId !=null and deptId !=''" >
+               and  dept_id = #{deptId}
+            </if>
+            <if test="status != null  and status != ''  ">
+                and  status = #{status}
+            </if>
+        </where>
+    </select>
+        <!--根据部门查询自己部门的服务-->
+    <select id="selectDeptRoomList" resultMap="ServiceItemsResult" >
+        select si_id,si_name from service_items where dept_id =#{deptId}
+    </select>
+
+</mapper>

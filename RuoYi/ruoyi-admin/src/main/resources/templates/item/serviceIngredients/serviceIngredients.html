@@ -1,0 +1,177 @@
+<!DOCTYPE HTML>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    
+     <div class="container-div">
+		<div class="row">
+			<div class="col-sm-12 search-collapse">
+				<form id="formId">
+					<div class="select-list">
+						<ul>
+							<!--<li>-->
+								<!--编号：<input type="text" name="smNo"/>-->
+							<!--</li>-->
+
+							<li>
+								名称：<input type="text" name="smName"/>
+							</li>
+
+							<li>
+								产品单位：
+								<!--<input type="text" name="smUnit"/>-->
+								<select name="smUnit" th:with="type=${@dict.getType('product_unit')}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+								</select>
+							</li>
+
+							<!--<li>
+								产品数量：<input type="text" name="smNum"/>
+							</li>-->
+
+							<li>
+								服务项名称：<!--<input type="text" name="stId"/>-->
+								<select name="stId" th:with="type=${@dict.getService()}">
+									<option value="">所有</option>
+									<option th:each="dict : ${type}" th:text="${dict.siName}" th:value="${dict.siId}"></option>
+								</select>
+							</li>
+
+							<!--<li>-->
+								<!--创建时间：<input type="text" name="createTime"/>-->
+							<!--</li>-->
+
+							<!--<li>-->
+								<!--备注：<input type="text" name="remark"/>-->
+							<!--</li>-->
+
+							<li>
+								<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+								<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+							</li>
+						</ul>
+					</div>
+				</form>
+			</div>
+			
+	        <div class="btn-group-sm" id="toolbar" role="group">
+				<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="item:serviceIngredients:add">
+					<i class="fa fa-plus"></i> 添加
+				</a>
+				<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="item:serviceIngredients:edit">
+					<i class="fa fa-edit"></i> 修改
+				</a>
+				<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="item:serviceIngredients:remove">
+					<i class="fa fa-remove"></i> 删除
+				</a>
+				<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="item:serviceIngredients:export">
+						<i class="fa fa-download"></i> 导出
+				 </a>
+			</div>
+			<div class="col-sm-12 select-table table-striped">
+				<table id="bootstrap-table" data-mobile-responsive="true"></table>
+			</div>
+		</div>
+	</div>
+    <div th:include="include :: footer"></div>
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('item:serviceIngredients:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('item:serviceIngredients:remove')}]];
+        var prefix = ctx + "item/serviceIngredients";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+				exportUrl: prefix + "/export",
+                modalName: "服务项配料",
+		        showExport: true,
+                columns: [{
+		            checkbox: true
+		        },
+				{
+					field : 'smId', 
+					title : '服务配料',
+					visible: false
+				},
+				{
+					field : 'smNo', 
+					title : '编号',
+					sortable: true
+				},
+				{
+					field : 'smName', 
+					title : '配料名称',
+					sortable: true
+				},
+				{
+					field : 'smUnit', 
+					title : '产品单位',
+					sortable: true,
+                    formatter: function(value, row, index) {
+                       if(row.smUnit=='0'){
+                         return '<span>克</span> ';
+					   }else if(row.smUnit=='1'){
+                           return '<span>毫升</span> ';
+					   }else if(row.smUnit=='2'){
+                           return '<span>个</span> ';
+                       }else if(row.smUnit=='3'){
+                           return '<span>滴</span> ';
+                       }else if(row.smUnit=='4'){
+                           return '<span>瓶</span> ';
+                       }else if(row.smUnit=='5'){
+                           return '<span>支</span> ';
+                       }else if(row.smUnit=='6'){
+                           return '<span>包</span> ';
+                       }else if(row.smUnit=='7'){
+                           return '<span>对</span> ';
+                       }else if(row.smUnit=='8'){
+                           return '<span>贴</span> ';
+                       }else if(row.smUnit=='9'){
+                           return '<span>片</span> ';
+                       }else if(row.smUnit=='10'){
+                           return '<span>盒</span> ';
+                       }
+
+                    }
+				},
+				{
+					field : 'smNum', 
+					title : '产品数量',
+					sortable: true
+				},
+				{
+					field : 'serviceItemName',
+					title : '服务项名称',
+					sortable: true
+				},
+				{
+					field : 'createTime', 
+					title : '创建时间',
+					sortable: true
+				},
+				{
+					field : 'remark', 
+					title : '备注',
+					sortable: true
+				},
+		        {
+		            title: '操作',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.smId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.smId + '\')"><i class="fa fa-remove"></i>删除</a>');
+						return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

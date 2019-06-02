@@ -1,0 +1,361 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<head th:include="include :: header"></head>
+<style>
+	.container{padding-bottom: 20px;padding-top: 20px}
+	.btn-bottom{background-color: #BF9E7F;color: #fff;}
+
+	.userNameBox{padding: 15px;background-color: #BF9E7F;margin-bottom: 15px;color:#fff;font-size:16px;font-weight: bold;background: url('/img/topBoxBG.jpg');background-size: cover;}
+	.btn-top{float: right;background-color: #fff;color: #BF9E7F;}
+	/*具体配料*/
+	.detailPl{padding: 6px 12px;background-color: #fff;min-height: 50px;margin-bottom: 15px;}
+</style>
+<body style="background-color: #f5f5f5;">
+	<div class="userNameBox clearfix">
+		当前账号：<span id="userName"></span>
+		<button class="btn btn-top btn-sm" onclick="logout()">退出</button>
+	</div>
+    <div class="container">
+
+        <form class="myForm" id="form-record-add">
+			<div class="form-group">
+				<label class="control-label">顾客名称：</label>
+				<input id="gkName" name="gkName" class="form-control" type="text" autocomplete="off">
+			</div>
+			<div class="form-group">
+				<label class="control-label">顾客编号：</label>
+				<input id="gkNum" name="gkNum" class="form-control" type="text" autocomplete="off">
+			</div>
+			<div class="form-group">
+				<label class="control-label">房间：</label>
+				<select id="roomId" name="roomId"  class="form-control">
+					<option value="">所有</option>
+					<option th:each="room:${roomList}" th:text="${room.roName}" th:value="${room.roId}"></option>
+				</select>
+			</div>
+
+			<div class="form-group">
+				<label class="control-label">房间占用时间：</label>
+				<!--<input id="roomTime" name="roomTime" class="form-control" type="text">-->
+				<select id="roomTime" name="roomTime" th:with="type=${@dict.getType('room_time')}" class="form-control" >
+					<option value="">所有</option>
+					<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label class="control-label">美容师：</label>
+				<!--<input id="mrsId" name="mrsId" class="form-control" type="text">-->
+				<select id="mrsId" name="mrsId"  class="form-control"  >
+					<option value="">所有</option>
+					<option th:each="dict : ${mrsList}" th:text="${dict.userName}" th:value="${dict.userId}"></option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label class="control-label">顾问：</label>
+				<!--<input id="gwId" name="gwId" class="form-control" type="text">-->
+				<select id="gwId" name="gwId"  class="form-control"  >
+					<option value="">所有</option>
+					<option th:each="dict : ${gwList}" th:text="${dict.userName}" th:value="${dict.userId}"></option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label class="control-label">服务项1：</label>
+				<select id="siId1" name="siId"  class="form-control" onchange="selectHao1(this.value)" >
+					<option value="">所有</option>
+					<option th:each="dict : ${siList}" th:text="${dict.siName}" th:value="${dict.siId}"></option>
+				</select>
+				<!--<input id="siId" name="siId" class="form-control" type="text">-->
+			</div>
+			<div class="form-group">
+				<label class="control-label">具体配料1：</label>
+				<!--<input id="state" name="state" class="form-control" type="text">-->
+				<textarea id="a" name="a" class="detailPl form-control" readonly rows="5"></textarea>
+			</div>
+			<div class="form-group">
+				<label class="control-label">服务项2：</label>
+				<select id="siId2" name="siId2"  class="form-control" onchange="selectHao2(this.value)" >
+					<option value="">所有</option>
+					<option th:each="dict : ${siList}" th:text="${dict.siName}" th:value="${dict.siId}"></option>
+				</select>
+				<!--<input id="siId" name="siId" class="form-control" type="text">-->
+			</div>
+			<div class="form-group">
+				<label class="control-label">具体配料2：</label>
+				<!--<input id="state" name="state" class="form-control" type="text">-->
+<!--				<div id="b" name="b" class="detailPl"></div>-->
+				<textarea id="b" name="b" class="detailPl form-control" readonly rows="5"></textarea>
+			</div>
+			<div class="form-group">
+				<label class="control-label">服务项3：</label>
+				<select id="siId3" name="siId3"  class="form-control" onchange="selectHao3(this.value)" >
+					<option value="">所有</option>
+					<option th:each="dict : ${siList}" th:text="${dict.siName}" th:value="${dict.siId}"></option>
+				</select>
+				<!--<input id="siId" name="siId" class="form-control" type="text">-->
+			</div>
+			<div class="form-group">
+				<label class="control-label">具体配料3：</label>
+				<!--<input id="state" name="state" class="form-control" type="text">-->
+<!--				<div id="c" name="c" class="detailPl"></div>-->
+				<textarea id="c" name="c" class="detailPl form-control" readonly rows="5"></textarea>
+			</div>
+			<!--<div class="form-group">-->
+				<!--<label class="col-sm-3 control-label">开单时间：</label>-->
+				<!--<div class="col-sm-8">-->
+					<!--<input id="createTime" name="createTime" class="form-control" type="text">-->
+				<!--</div>-->
+			<!--</div>-->
+			<div class="form-group">
+				<label class="control-label">备注：</label>
+				<!--<input id="remark" name="remark" class="form-control" type="text">-->
+			   <textarea id="remark" name="remark" class="form-control" rows="3"></textarea>
+			</div>
+
+
+		</form>
+		<div th:align="center">
+			<button class="btn btn-bottom btn-block" onclick="search1()">确认</button>
+		</div>
+
+	</div>
+    <div th:include="include::footer"></div>
+    <script type="text/javascript">
+		var prefix = ctx + "record/record";
+
+
+		function selectHao1(value) {
+			// alert(value)
+			$.ajax({
+				type:'post',
+				url:prefix+"/selectHao",
+				data:{"id":value},
+				success:function(re){
+					console.log( re.data)
+					$("#a").html("")
+					var arr = re.data;
+					if(arr.length > 0){
+						for(var i=0;i< arr.length;i++) {
+							var smNo = arr[i].smNo;
+							var smName = arr[i].smName;
+							var smNum = arr[i].smNum;
+							var smUnit = arr[i].smUnit;
+							var ss;
+							if(smUnit =='0'){
+								ss ="克"
+							}else if(smUnit =='1'){
+								ss ="毫升"
+							}else if(smUnit =='2'){
+								ss ="个"
+							}else if(smUnit =='3'){
+								ss ="滴"
+							}else if(smUnit =='4'){
+								ss ="甁"
+							}else if(smUnit =='5'){
+								ss ="支"
+							}else if(smUnit =='6'){
+								ss ="包"
+							}else if(smUnit =='7'){
+								ss ="对"
+							}else if(smUnit =='8'){
+								ss ="贴"
+							}else if(smUnit =='9'){
+								ss ="片"
+							}else if(smUnit =='10'){
+								ss ="盒"
+							}
+							$("#a").html(arr[i].smNo+" , "+arr[i].smName+" , "+ arr[i].smNum+ss +" ;");
+						}
+					}
+				}
+			});
+		}
+
+
+
+
+
+		$("#form-record-add").validate({
+			rules:{
+				xxxx:{
+					required:true,
+				},
+			},
+			focusCleanup: true
+		});
+
+		function search1() {
+
+            var gkName =$("#gkName").val();
+            var gkNum =$("#gkNum").val();
+            var roomId =$("#roomId").val();
+            var roomTime =$("#roomTime").val();
+            var mrsId =$("#mrsId").val();
+            var gwId =$("#gwId").val();
+            var siId1 =$("#siId1").val();
+            var siId2 =$("#siId2").val();
+            var siId3 =$("#siId3").val();
+            var a =$("#a").val();
+            var b =$("#b").val();
+            var c =$("#c").val();
+            var remark =$("#remark").val();
+           console.log(gkName + gkNum + roomId + roomTime+ mrsId + gwId + siId1 + siId2 );
+            $.ajax({
+            	type:'post',
+            	url:prefix+'/add',
+            	data:{
+            		"gkName":gkName,
+            		"gkNum" : gkNum,
+            		"roomId":roomId,
+            		"roomTime" :roomTime,
+            		"mrsId":mrsId,
+            		"gwId":gwId,
+            		"siId":siId1,
+            		"siId2":siId2,
+            		"siId3": siId3,
+            		"a":a,
+            		"b":b,
+            		"c":c,
+            		"remark":remark
+            	},
+            	success:function (re) {
+					layer.open({
+						type: 0,
+						content: '提交成功', //这里content是一个普通的String
+						yes: function(index, layero){
+							//  刷新当前页面
+							window.location.reload();
+							layer.close(index); //如果设定了yes回调，需进行手工关闭
+						}
+					});
+               }
+            })
+        }
+
+
+        function selectHao2(value) {
+            $.ajax({
+                type:'post',
+                url:prefix+"/selectHao",
+                data:{
+                    "id":value
+                },
+                success:function(re){
+                    console.log( re.data)
+                    $("#b").html("")
+                    var arr = re.data;
+                    if(arr.length > 0){
+                        for(var i=0;i< arr.length;i++) {
+                            var smNo = arr[i].smNo;
+                            var smName = arr[i].smName;
+                            var smNum = arr[i].smNum;
+                            var smUnit = arr[i].smUnit;
+                            var ss;
+                            if(smUnit =='0'){
+                                ss ="克"
+                            }else if(smUnit =='1'){
+                                ss ="毫升"
+                            }else if(smUnit =='2'){
+                                ss ="个"
+                            }else if(smUnit =='3'){
+                                ss ="滴"
+                            }else if(smUnit =='4'){
+                                ss ="甁"
+                            }else if(smUnit =='5'){
+                                ss ="支"
+                            }else if(smUnit =='6'){
+                                ss ="包"
+                            }else if(smUnit =='7'){
+                                ss ="对"
+                            }else if(smUnit =='8'){
+                                ss ="贴"
+                            }else if(smUnit =='9'){
+                                ss ="片"
+                            }else if(smUnit =='10'){
+                                ss ="盒"
+                            }
+                            $("#b").append(arr[i].smNo+" , "+arr[i].smName+" , "+ arr[i].smNum+ss +" ; ");
+                        }
+                    }
+                }
+            });
+
+        }
+        function selectHao3(value) {
+            $.ajax({
+                type:'post',
+                url:prefix+"/selectHao",
+                data:{
+                    "id":value
+                },
+                success:function(re){
+                    console.log( re.data)
+                    $("#c").html("")
+                    var arr = re.data;
+                    if(arr.length > 0){
+                        for(var i=0;i< arr.length;i++) {
+                            var smNo = arr[i].smNo;
+                            var smName = arr[i].smName;
+                            var smNum = arr[i].smNum;
+                            var smUnit = arr[i].smUnit;
+                            var ss;
+                            if(smUnit =='0'){
+                                ss ="克"
+                            }else if(smUnit =='1'){
+                                ss ="毫升"
+                            }else if(smUnit =='2'){
+                                ss ="个"
+                            }else if(smUnit =='3'){
+                                ss ="滴"
+                            }else if(smUnit =='4'){
+                                ss ="甁"
+                            }else if(smUnit =='5'){
+                                ss ="支"
+                            }else if(smUnit =='6'){
+                                ss ="包"
+                            }else if(smUnit =='7'){
+                                ss ="对"
+                            }else if(smUnit =='8'){
+                                ss ="贴"
+                            }else if(smUnit =='9'){
+                                ss ="片"
+                            }else if(smUnit =='10'){
+                                ss ="盒"
+                            }
+							//var appendHtml = '<p>'+arr[i].smNo+" , "+arr[i].smName+" , "+ arr[i].smNum + ss +" ; "+'</p>'
+							//$("#c").append('<p>'+arr[i].smNo+" , "+arr[i].smName+" , "+ arr[i].smNum+ss +" ; "+'</p>');
+							$("#c").text(arr[i].smNo+" , "+arr[i].smName+" , "+ arr[i].smNum + ss +" ;")
+                        }
+                    }
+                }
+            });
+        }
+        /* 退出*/
+		function logout() {
+            $.ajax({
+                type : "GET",
+                url : prefix +"/logout",
+                success : function(re) {
+                    location.href = prefix +"/login"
+                }
+            })
+        }
+
+		function GetRequest() {
+			var url = location.search; //获取url中"?"符后的字串
+			var theRequest = new Object();
+			if (url.indexOf("?") != -1) {
+				var str = url.substr(1);
+				strs = str.split("&");
+				for(var i = 0; i < strs.length; i ++) {
+					theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+				}
+			}
+			return theRequest;
+		}
+		var userName = GetRequest().username;
+		$("#userName").html(userName);
+	</script>
+</body>
+</html>

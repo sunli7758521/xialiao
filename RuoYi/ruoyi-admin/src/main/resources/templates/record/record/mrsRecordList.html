@@ -1,0 +1,349 @@
+<!DOCTYPE HTML>
+<!--美容师单据-->
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="refresh" content="5">
+<head th:include="include :: header"></head>
+<style>
+    #dataNum{color: #f03254;}
+    .btn_singOut{background-color: #BF9E7F;color: #fff;float: right;}
+    .card-view{padding: 7px 0;border-bottom: 1px solid #e7eaec}
+    .card-views .card-view:nth-of-type(1){background-color:#BF9E7F;color: #fff;}
+    .card-views .card-view:nth-last-of-type(1){border-bottom: 0px;}
+    .card-views .card-view .title{min-width: 0;padding-right: 10px;}
+    .userNameBox{background: url('/img/topBoxBG.jpg');background-size: cover;padding: 15px;background-color: #BF9E7F;margin-bottom: 15px;color:#fff;font-size:16px;font-weight: bold;border-radius: 6px;-webkit-border-radius: 6px;box-shadow: 1px 1px 3px rgba(0,0,0,.2);}
+    .btn-top{float: right;background-color: #fff;color: #BF9E7F;}
+</style>
+<body class="gray-bg" >
+     <div>
+         <div class="userNameBox clearfix">
+             当前账号：<span id="userName"></span>
+             <button class="btn btn-top btn-sm" onclick="logout()">退出</button>
+             <h3>您有<span id="dataNum"></span>条单据</h3>
+             <h3 style="color: #f03254">美容师切记：做完项目后点击确认按钮</h3>
+         </div>
+         <!--<div class="col-sm-12 select-table table-striped clearfix" style="margin-top: 0">-->
+             <!--<h3>美容师账号登陆成功</h3>-->
+             <!--<h2 style="color: #ff3b5e">美容师切记：<br>做完项目后点击确定</h2>-->
+             <!--<h3 style="font-size: 16px;padding-top: 10px">您有<span id="dataNum"></span>条单据</h3>-->
+             <!--<button class="btn btn-sm btn_singOut" onclick="logout()">退出</button>-->
+         <!--</div>-->
+		 <div class="col-sm-12 select-table table-striped">
+			 <table class="table table-bordered" id="bootstrap-table" data-mobile-responsive="true"></table>
+		 </div>
+         <!--<button class="btn-default" value=" 发送 " id="trig" />-->
+	</div>
+    <div th:include="include :: footer"></div>
+     <script type="text/javascript">
+         // function aa() {
+         //     $('<audio id="chatAudio"><source src="/aa.mp3" type="audio/mpeg"></audio>').appendTo('body');//audio 表示音频，把这个内容添加到页面body中
+         //     $("#trig").click(function () {
+         //         $('#chatAudio')[0].play();//'#chatAudio'在这个区域里的第一个资源文件
+         //     });
+         // }
+         function aa() {
+             $('<audio id="chatAudio"><source src="/aa.mp3" type="audio/mpeg"></audio>').appendTo('body');//audio 表示音频，把这个内容添加到页面body中
+                $(function () {
+                    $('#chatAudio')[0].play();//'#chatAudio'在这个区域里的第一个资源文件
+                });
+         }
+         function GetRequest() {
+             var url = location.search; //获取url中"?"符后的字串
+             var theRequest = new Object();
+             if (url.indexOf("?") != -1) {
+                 var str = url.substr(1);
+                 strs = str.split("&");
+                 for(var i = 0; i < strs.length; i ++) {
+                     theRequest[strs[i].split("=")[0]]=unescape(strs[i].split("=")[1]);
+                 }
+             }
+             return theRequest;
+         }
+         var userName = GetRequest().username;
+         $("#userName").html(userName);
+     </script>
+
+
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('record:record:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('record:record:remove')}]];
+        var prefix = ctx + "record/record";
+
+        $(function() {
+            var options = {
+                url: prefix + "/wLlist",
+                modalName: "美容记录",
+		        showExport: true,
+                columns: [{
+                    title:"单据条目",
+		        },
+				{
+					field : 'srId', 
+					title : '记录主键：',
+					visible: false
+				},
+				{
+					field : 'gkName', 
+					title : '顾客名称：',
+					sortable: true
+				},
+				{
+					field : 'gkNum', 
+					title : '顾客编号：',
+					sortable: true
+				},
+				{
+					field : 'roomName',
+					title : '房间名称：',
+					sortable: true
+				},
+				{
+					field : 'roomTime', 
+					title : '房间占用时间：',
+					sortable: true,
+                    formatter: function(value, row, index) {
+                       if(row.roomTime=='0'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">0.5小时</span>';
+					   }else if(row.roomTime=='1'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">1小时</span>';
+                       }else if(row.roomTime=='2'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">1.5小时</span>';
+                       }else if(row.roomTime=='3'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">2小时</span>';
+                       }else if(row.roomTime=='4'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">2.5小时</span>';
+                       }else if(row.roomTime=='5'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">3小时</span>';
+                       }else if(row.roomTime=='6'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">3.5小时</span>';
+                       }else if(row.roomTime=='7'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">4小时</span>';
+                       }else if(row.roomTime=='8'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">4.5小时</span>';
+                       }else if(row.roomTime=='9'){
+                           return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">5小时</span>';
+                       }
+                    }
+				},
+				{
+					field : 'createTime',
+					title : '开单时间：',
+					sortable: true
+				},
+				{
+					field : 'mrName',
+					title : '美容师：',
+					sortable: true
+				},
+				{
+					field : 'gwName',
+					title : '顾问：',
+					sortable: true
+				},
+				{
+					field : 'siName',
+					title : '服务项1：',
+					sortable: true
+				},
+				{
+					field : 'a',
+					title : '配料1：',
+					sortable: true
+				},
+				{
+					field : 'siName2',
+					title : '服务项2：',
+					sortable: true
+				},
+				{
+					field : 'b',
+					title : '配料2：',
+					sortable: true
+				},
+				{
+					field : 'siName3',
+					title : '服务项3：',
+					sortable: true
+				},
+				{
+					field : 'c',
+					title : '配料3：',
+					sortable: true
+				},
+				{
+					field : 'state',
+					title : '单据状况：',
+					sortable: true,
+                    formatter: function(value, row, index) {
+                        if(row.state =='1'){
+                            return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">配料中</span>';
+                        }else if(row.state=='2'){
+                            return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">美容师</span>';
+                        }else if(row.state =='3'){
+                            return '<span style="text-align: center;color: #1c84c6;font-weight:bold;">完成</span>';
+                        }
+
+                    }
+				},
+				{
+					field : 'remark', 
+					title : '备注：',
+					sortable: true
+				},
+		        {
+		            title: '操作：',
+		            align: 'center',
+		            formatter: function(value, row, index) {
+		            	var actions = [];
+		            	// actions.push('<a class="btn btn-success btn-xs ' + editFlag + '" href="#" onclick="$.operate.edit(\'' + row.srId + '\')"><i class="fa fa-edit"></i>编辑</a> ');
+                        // actions.push('<a class="btn btn-danger btn-xs ' + removeFlag + '" href="#" onclick="$.operate.remove(\'' + row.srId + '\')"><i class="fa fa-remove"></i>删除</a>');
+                        actions.push('<btn class="btn btn-success btn-sm' + '0' + '" href="#" onclick="sub(\'' + row.srId +'|'+ row.state + '\')">美容师确认</btn>');
+                        return actions.join('');
+		            }
+		        }]
+            };
+            $.table.init(options);
+        });
+
+
+
+        $(function () {
+            var prefix = ctx + "record/record";
+            $.ajax({
+                type:'post',
+                url: prefix +"/selectCountNum",
+                success:function (re) {
+                    if(re.data > 0){
+                        $("#dataNum").html(re.data);
+                        aa();
+                    }else{
+                        $("#dataNum").html("0");
+                    }
+                }
+            })
+        })
+        /** 美容师确认 */
+        function sub(stateId){
+            var id ;
+            var state;
+            var arr =  stateId.split("|");
+            id = arr[0];
+            state = arr[1];
+            $.ajax({
+                type:'post',
+                url:prefix +"/updateStatus",
+                data:{"id": id ,"state":state},
+                success:function(re){
+                    //  刷新当前页面
+                    window.location.reload();
+                }
+            })
+        }
+
+
+
+        /* 退出*/
+        function logout() {
+            $.ajax({
+                type : "GET",
+                url : prefix +"/logout",
+                success : function(re) {
+                    location.href = prefix +"/login"
+                }
+            })
+        }
+
+    </script>
+     <script type="text/javascript">
+         // $(function () {
+         //     loadWin();
+         // })
+         // function loadWin()
+         // {
+         //     setInterval("window.location.reload()",300000);
+         // }
+     </script>
+
+</body>
+</html>
+
+<!--<div class="container-div">-->
+<!--<div class="row">-->
+<!--<div class="col-sm-12 search-collapse">-->
+<!--<form id="formId">-->
+<!--<div class="select-list">-->
+<!--<ul>-->
+<!--<li>-->
+<!--美容师：<input type="text" name="mrsId"/>-->
+<!--</li>-->
+
+<!--<li>-->
+<!--顾问：<input type="text" name="gwId"/>-->
+<!--</li>-->
+<!--&lt;!&ndash;<li>&ndash;&gt;-->
+<!--&lt;!&ndash;顾客名称：<input type="text" name="gkName"/>&ndash;&gt;-->
+<!--&lt;!&ndash;</li>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<li>&ndash;&gt;-->
+<!--&lt;!&ndash;顾客编号：<input type="text" name="gkNum"/>&ndash;&gt;-->
+<!--&lt;!&ndash;</li>&ndash;&gt;-->
+
+<!--<li>-->
+<!--房间主键：&lt;!&ndash;<input type="text" name="roomId"/>&ndash;&gt;-->
+<!--<select name="roomId" th:with="type=${@dict.getRoom()}">-->
+<!--<option value="">所有</option>-->
+<!--<option th:each="dict : ${type}" th:text="${dict.roName}" th:value="${dict.roId}"></option>-->
+<!--</select>-->
+<!--</li>-->
+
+<!--<li>-->
+<!--房间占用时间：-->
+<!--&lt;!&ndash;<input type="text" name="roomTime"/>&ndash;&gt;-->
+<!--<select name="roomTime" th:with="type=${@dict.getType('room_time')}">-->
+<!--<option value="">所有</option>-->
+<!--<option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>-->
+<!--</select>-->
+<!--</li>-->
+
+<!--&lt;!&ndash;<li>&ndash;&gt;-->
+<!--&lt;!&ndash;服务项id：<input type="text" name="siId"/>&ndash;&gt;-->
+<!--&lt;!&ndash;</li>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<li>&ndash;&gt;-->
+<!--&lt;!&ndash;0，顾问开单状态 1.物料确认状态 2.美容师确认  ：<input type="text" name="state"/>&ndash;&gt;-->
+<!--&lt;!&ndash;</li>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<li>&ndash;&gt;-->
+<!--&lt;!&ndash;开单时间：<input type="text" name="createTime"/>&ndash;&gt;-->
+<!--&lt;!&ndash;</li>&ndash;&gt;-->
+
+<!--&lt;!&ndash;<li>&ndash;&gt;-->
+<!--&lt;!&ndash;备注：<input type="text" name="remark"/>&ndash;&gt;-->
+<!--&lt;!&ndash;</li>&ndash;&gt;-->
+
+<!--<li>-->
+<!--<a class="btn btn-primary btn-rounded btn-sm" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>-->
+<!--<a class="btn btn-warning btn-rounded btn-sm" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>-->
+<!--</li>-->
+<!--</ul>-->
+<!--</div>-->
+<!--</form>-->
+<!--</div>-->
+
+<!--<div class="btn-group-sm" id="toolbar" role="group">-->
+<!--&lt;!&ndash;<a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="record:record:add">&ndash;&gt;-->
+<!--&lt;!&ndash;<i class="fa fa-plus"></i> 添加&ndash;&gt;-->
+<!--&lt;!&ndash;</a>&ndash;&gt;-->
+<!--<a class="btn btn-primary btn-edit disabled" onclick="$.operate.edit()" shiro:hasPermission="record:record:edit">-->
+<!--<i class="fa fa-edit"></i> 修改-->
+<!--</a>-->
+<!--<a class="btn btn-danger btn-del btn-del disabled" onclick="$.operate.removeAll()" shiro:hasPermission="record:record:remove">-->
+<!--<i class="fa fa-remove"></i> 删除-->
+<!--</a>-->
+<!--<a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="record:record:export">-->
+<!--<i class="fa fa-download"></i> 导出-->
+<!--</a>-->
+<!--</div>-->
+<!---->
+<!--</div>-->

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.record.mapper.RecordMapper">
+    
+    <resultMap type="Record" id="RecordResult">
+        <result property="srId"    column="sr_id"    />
+        <result property="gkName"    column="gk_name"    />
+        <result property="gkNum"    column="gk_num"    />
+        <result property="roomId"    column="room_id"    />
+        <result property="roomTime"    column="room_time"    />
+        <result property="mrsId"    column="mrs_id"    />
+        <result property="gwId"    column="gw_id"    />
+        <result property="state"    column="state"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="siId"    column="si_id"    />
+        <result property="siId2"    column="si_id2"    />
+        <result property="siId3"    column="si_id3"    />
+        <result property="a"    column="a"    />
+        <result property="b"    column="b"    />
+        <result property="c"    column="c"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="yjTime"    column="yj_time"    />
+
+    </resultMap>
+	
+	<sql id="selectRecordVo">
+        select sr_id, gk_name, gk_num, room_id, room_time, mrs_id, gw_id,  state, create_time, remark,si_id, si_id2, si_id3, a, b , c, dept_id ,end_time, yj_time   from record
+    </sql>
+	
+    <select id="selectRecordList" parameterType="Record" resultMap="RecordResult">
+        <include refid="selectRecordVo"/>
+        <where>  
+            <if test="srId != null "> and sr_id = #{srId}</if>
+             <if test="gkName != null  and gkName != '' "> and gk_name = #{gkName}</if>
+             <if test="gkNum != null  and gkNum != '' "> and gk_num = #{gkNum}</if>
+             <if test="roomId != null "> and room_id = #{roomId}</if>
+             <if test="roomTime != null  and roomTime != '' "> and room_time = #{roomTime}</if>
+             <if test="mrsId != null "> and mrs_id = #{mrsId}</if>
+             <if test="gwId != null "> and gw_id = #{gwId}</if>
+             <if test="state != null  and state != '' "> and state = 2 </if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="remark != null  and remark != '' "> and remark = #{remark}</if>
+             <if test="siId != null "> and si_id = #{siId}</if>
+             <if test="siId2 != null "> and si_id2 = #{siId2}</if>
+             <if test="siId3 != null "> and si_id3 = #{siId3}</if>
+            <if test="a != null and a != '' "> and a = #{a}</if>
+            <if test="b != null and b != '' "> and b = #{b}</if>
+            <if test="c != null and c != '' "> and c = #{c}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="endTime != null "> and end_time = #{endTime}</if>
+            <if test="yjTime != null "> and yj_time = #{yjTime}</if>
+        </where>
+            order by end_time desc
+    </select>
+    
+    <select id="selectRecordById" parameterType="Long" resultMap="RecordResult">
+        <include refid="selectRecordVo"/>
+        where sr_id = #{srId}
+    </select>
+        
+    <insert id="insertRecord" parameterType="Record" useGeneratedKeys="true" keyProperty="srId">
+        insert into record
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="gkName != null  and gkName != ''  ">gk_name,</if>
+			<if test="gkNum != null  and gkNum != ''  ">gk_num,</if>
+			<if test="roomId != null  ">room_id,</if>
+			<if test="roomTime != null  and roomTime != ''  ">room_time,</if>
+			<if test="mrsId != null  ">mrs_id,</if>
+			<if test="gwId != null  ">gw_id,</if>
+			<if test="state != null  and state != ''  ">state,</if>
+			<if test="createTime != null  ">create_time,</if>
+			<if test="remark != null  and remark != ''  ">remark,</if>
+            <if test="siId != null  ">si_id,</if>
+            <if test="siId2 != null  ">si_id2,</if>
+            <if test="siId3 != null  ">si_id3,</if>
+            <if test="a != null and  a != '' ">a,</if>
+            <if test="b != null and  b != '' ">b,</if>
+            <if test="c != null and  c != '' ">c,</if>
+            <if test="deptId != null ">dept_id,</if>
+            <if test="endTime != null ">end_time,</if>
+            <if test="yjTime != null "> yj_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="gkName != null  and gkName != ''  ">#{gkName},</if>
+			<if test="gkNum != null  and gkNum != ''  ">#{gkNum},</if>
+			<if test="roomId != null  ">#{roomId},</if>
+			<if test="roomTime != null  and roomTime != ''  ">#{roomTime},</if>
+			<if test="mrsId != null  ">#{mrsId},</if>
+			<if test="gwId != null  ">#{gwId},</if>
+			<if test="state != null  and state != ''  ">#{state},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+			<if test="remark != null  and remark != ''  ">#{remark},</if>
+            <if test="siId != null  ">#{siId},</if>
+            <if test="siId2 != null  ">#{siId2},</if>
+            <if test="siId3 != null  ">#{siId3},</if>
+            <if test="a != null and  a != '' ">#{a},</if>
+            <if test="b != null  and  b != '' ">#{b},</if>
+            <if test="c != null and  c != '' ">#{c},</if>
+            <if test="deptId != null ">#{deptId},</if>
+            <if test="endTime != null ">#{endTime},</if>
+            <if test="yjTime != null "> #{yjTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateRecord" parameterType="Record">
+        update record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="gkName != null  and gkName != ''  ">gk_name = #{gkName},</if>
+            <if test="gkNum != null  and gkNum != ''  ">gk_num = #{gkNum},</if>
+            <if test="roomId != null  ">room_id = #{roomId},</if>
+            <if test="roomTime != null  and roomTime != ''  ">room_time = #{roomTime},</if>
+            <if test="mrsId != null  ">mrs_id = #{mrsId},</if>
+            <if test="gwId != null  ">gw_id = #{gwId},</if>
+            <if test="siId != null  ">si_id = #{siId},</if>
+            <if test="state != null  and state != ''  ">state = #{state},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="remark != null  and remark != ''  ">remark = #{remark},</if>
+            <if test="siId2 != null  ">si_id2 = #{siId2},</if>
+            <if test="siId3 != null  ">si_id3 = #{siId3},</if>
+            <if test="a != null and  a != ''  ">a = #{a},</if>
+            <if test="b != null and  b != ''  ">b = #{b},</if>
+            <if test="c != null  and  c != '' ">c = #{c},</if>
+            <if test="deptId != null ">dept_id = #{deptId},</if>
+            <if test="endTime != null ">end_time = #{endTime},</if>
+            <if test="yjTime != null "> yj_time = #{yjTime},</if>
+        </trim>
+        where sr_id = #{srId}
+    </update>
+
+	<delete id="deleteRecordById" parameterType="Long">
+        delete from record where sr_id = #{srId}
+    </delete>
+	
+    <delete id="deleteRecordByIds" parameterType="String">
+        delete from record where sr_id in 
+        <foreach item="srId" collection="array" open="(" separator="," close=")">
+            #{srId}
+        </foreach>
+    </delete>
+
+    <!-- 按部门查询 消费记录 -->
+    <select id="selectDeptRecord" resultMap="RecordResult" >
+        <include refid="selectRecordVo"/>
+        <where>
+            <if test="gkName != null  and gkName != '' ">
+             and gk_name like concat('%', #{gkName}, '%')
+            </if>
+            <if test="roomId != null ">
+                and room_id = #{roomId}
+            </if>
+            <if test="roomTime != null  and roomTime != '' ">
+             and room_time = #{roomTime}
+            </if>
+            <if test="mrsId != null ">
+             and mrs_id = #{mrsId}
+            </if>
+            <if test="gwId != null ">
+                and gw_id = #{gwId}
+            </if>
+            <if test="siId != null "> and si_id = #{siId}</if>
+        </where>
+    </select>
+    <!-- 美容师和 顾问 查询 所用 -->
+    <select id="selectWLAndMrsAllList" resultMap="RecordResult" >
+        <include refid="selectRecordVo"/>
+       <where>
+           <if test="state !=null and state !=''">
+               and  record.state = #{state}
+           </if>
+           <if test="deptId !=null and deptId !=''">
+               and  record.dept_id = #{deptId}
+           </if>
+       </where>
+    </select>
+    <!-- 物料师 和 美容师  查询数量  并提示信息  -->
+    <select id="selectAllNum" resultType="int" >
+        SELECT
+            count( 1 )
+        FROM
+            record
+        WHERE
+	        state = #{state}
+	        <if test="deptId !=null and deptId !=''">
+               and  dept_id = #{deptId}
+            </if>
+    </select>
+
+</mapper>

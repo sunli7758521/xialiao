@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.room.mapper.RoomMapper">
+    
+    <resultMap type="Room" id="RoomResult">
+        <result property="roId"    column="ro_id"    />
+        <result property="roName"    column="ro_name"    />
+        <result property="state"    column="state"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="rzyTime"    column="rzy_time"    />
+    </resultMap>
+	
+	<sql id="selectRoomVo">
+        select ro_id, ro_name, state, create_time, dept_id,rzy_time   from room
+    </sql>
+	
+    <select id="selectRoomList" parameterType="Room" resultMap="RoomResult">
+        <include refid="selectRoomVo"/>
+        <where>  
+            <if test="roId != null "> and ro_id = #{roId}</if>
+             <if test="roName != null  and roName != '' ">
+              and ro_name  like concat('%', #{roName}, '%')
+             </if>
+             <if test="state != null  and state != '' "> and state = #{state}</if>
+             <if test="createTime != null "> and create_time = #{createTime}</if>
+             <if test="deptId != null "> and dept_id = #{deptId}</if>
+             <if test="rzyTime != null "> and rzy_time = #{rzyTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectRoomById" parameterType="Long" resultMap="RoomResult">
+        <include refid="selectRoomVo"/>
+        where ro_id = #{roId}
+    </select>
+        
+    <insert id="insertRoom" parameterType="Room" useGeneratedKeys="true" keyProperty="roId">
+        insert into room
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="roName != null  and roName != ''  ">ro_name,</if>
+			<if test="state != null  and state != ''  ">state,</if>
+			<if test="createTime != null  ">create_time,</if>
+            <if test="deptId != null  ">dept_id,</if>
+            <if test="rzyTime != null "> and rzy_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="roName != null  and roName != ''  ">#{roName},</if>
+			<if test="state != null  and state != ''  ">#{state},</if>
+			<if test="createTime != null  ">#{createTime},</if>
+            <if test="deptId != null  ">#{deptId},</if>
+            <if test="rzyTime != null "> #{rzyTime},</if>
+         </trim>
+    </insert>
+	 
+    <update id="updateRoom" parameterType="Room">
+        update room
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="roName != null  and roName != ''  ">ro_name = #{roName},</if>
+            <if test="state != null  and state != ''  ">state = #{state},</if>
+            <if test="createTime != null  ">create_time = #{createTime},</if>
+            <if test="deptId != null  ">dept_id = #{deptId},</if>
+            <if test="rzyTime != null ">rzy_time = #{rzyTime},</if>
+        </trim>
+        where ro_id = #{roId}
+    </update>
+
+	<delete id="deleteRoomById" parameterType="Long">
+        delete from room where ro_id = #{roId}
+    </delete>
+	
+    <delete id="deleteRoomByIds" parameterType="String">
+        delete from room where ro_id in 
+        <foreach item="roId" collection="array" open="(" separator="," close=")">
+            #{roId}
+        </foreach>
+    </delete>
+    <!-- 根据部门id 查询 自己部门的 房间 -->
+    <select id="selectByDeptIdRoom" resultMap="RoomResult">
+        <include refid="selectRoomVo"/>
+        where dept_id = #{deptId}
+        <if test="state !=null and state !=''" >
+            and state = #{state}
+        </if>
+    </select>
+    <!--/** 查询 部门 房间*/-->
+    <select id="selectgetDeptRoomList" resultMap="RoomResult">
+		select ro_id,ro_name  from  room
+		  where  dept_id = #{deptId}
+    </select>
+
+</mapper>

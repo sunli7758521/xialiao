@@ -1,0 +1,69 @@
+<!DOCTYPE HTML>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<head th:include="include :: header"></head>
+<title>美容系统</title>
+<style>
+    #body{background: url('/img/loginBG1.jpg');background-size: cover;}
+    h4.m-t-md{text-align: center;font-size: 22px;margin-top: 100px;color:#fff }
+    .myForm{margin-top: 80px;padding:20px;background-color: rgba(255,255,255,0.5);font-size: 14px;}
+    input#username,input#phonenumber{border-radius: 3px;-webkit-border-radius: 3px;}
+    .btn{background-color: #BF9E7F;color: #fff;margin-top: 10px}
+    .btn a{color: #fff;font-size: 16px;}
+    #errTxt{color: #ff0000;margin: 0 6px}
+
+    .comFooter{width: 150px;position: absolute;bottom: 20px;left: 50%;margin-left: -75px;}
+    .comFooter img{width: 150px;}
+</style>
+<body id="body">
+<div class="container">
+    <!--wrapper wrapper-content ibox-content-->
+    <!-- ${pagecontext.request.getcontextpath} -->
+    <h4 class="m-t-md">美容开单系统</h4>
+    <form class="myForm">
+        <div class="form-group">
+            <label class="control-label" for="username">用户名：</label>
+            <input id="username" name="username" class="form-control" type="text" autocomplete="off">
+        </div>
+        <div class="form-group">
+            <label class="control-label" for="phonenumber">密码：</label>
+            <input id="phonenumber" name="phonenumber" class="form-control" type="text" autocomplete="off">
+        </div>
+        <span id="errTxt"></span>
+
+        <button type="button" class="btn btn-block" onclick="loginFun()"><a>登陆</a></button >
+    </form>
+</div>
+<!--<div class="comFooter"><img src="/img/logo.png"></div>-->
+<div th:include="include::footer"></div>
+<script type="text/javascript">
+  var prefix = ctx + "record/record"
+  function loginFun() {
+      var username = $("#username").val();
+      var phonenumber= $("#phonenumber").val();
+      $.ajax({
+          type:'post',
+          url: prefix+"/checkUsernameAndphonenumber",
+          data:{"username":username,"phonenumber":phonenumber},
+          success:function (result) {
+
+              if(result.code=="1"){
+                  $("#errTxt").html(result.msg);
+              }else if(result.code=="0"){
+                  window.location.href =prefix+"/toLogin?username="+username+"&phonenumber="+phonenumber;
+              }
+          }
+      });
+
+  }
+</script>
+</body>
+</html>
+<!--<div class="signup-footer">-->
+    <!--<div class="pull-left">-->
+        <!--&copy; 2019 All Rights Reserved. RuoYi <br>-->
+        <!--<a href="http://www.miitbeian.gov.cn/" target="_blank" rel="nofollow">粤ICP备18046899号</a><br>-->
+    <!--</div>-->
+<!--</div>-->
+
